@@ -255,6 +255,7 @@ const FileSelector = () => {
     else if (char === 'H' || char === 'h')
       toggleHidden(); // toggle hidden
     else if (char === 'S' || char === 's') toggleScroll(); // toggle scroll
+    else if (char === 'q' || char === 'Q') exit(); // quit
   });
 
   const readFolder = useCallback(() => {
@@ -360,4 +361,12 @@ const FileSelector = () => {
     </Box>
   );
 };
-render(<FileSelector />);
+const app = render(<FileSelector />);
+
+const exit = () => {
+  ConnectionsStore.getState().devices.forEach(({ connection }) => {
+    connection.close();
+  });
+  wss.close();
+  app.unmount();
+};
