@@ -101,12 +101,18 @@ type ChangeTopOffset = {
   value: number;
 };
 
+type Reset = {
+  type: 'reset';
+  value: boolean;
+};
+
 type ServerMessages =
   | SetImage
   | ChangeOpacity
   | SetHidden
   | SetScroll
-  | ChangeTopOffset;
+  | ChangeTopOffset
+  | Reset;
 
 function uint8ArrayToBase64(uint8Array: Uint8Array) {
   let binary = '';
@@ -194,6 +200,12 @@ const changeOpacity = (plus: boolean) =>
 const changeTopOffset = (amount: number) =>
   sendServerMessage({ type: 'changeTopOffset', value: amount });
 
+const reset = (value: boolean) =>
+  sendServerMessage({
+    type: 'reset',
+    value,
+  });
+
 const HelpItem = ({ title, value }: { title: string; value: string }) => {
   return (
     <Box>
@@ -239,6 +251,7 @@ const FileSelector = () => {
       return changeTopOffset(1); // plus top offset
     else if (char === 'k' || char === 'K')
       return changeTopOffset(-1); // minus top offset
+    else if (char === 'r' || char === 'R') return reset(false);
     else if (char === 'H' || char === 'h')
       toggleHidden(); // toggle hidden
     else if (char === 'S' || char === 's') toggleScroll(); // toggle scroll

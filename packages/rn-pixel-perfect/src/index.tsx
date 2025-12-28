@@ -28,13 +28,18 @@ type ChangeTopOffset = {
   type: 'changeTopOffset';
   value: number;
 };
+type Reset = {
+  type: 'reset';
+  value: boolean;
+};
 
 type ServerMessages =
   | SetImage
   | ChangeOpacity
   | SetHidden
   | SetScroll
-  | ChangeTopOffset;
+  | ChangeTopOffset
+  | Reset;
 
 export const validateMessage = (data: any) => {
   try {
@@ -116,6 +121,8 @@ export const Overlay = ({ host, port }: { host?: string; port?: number }) => {
           return setScroll(msg.value);
         case 'changeTopOffset':
           return setTopOffset((value) => value + msg.value);
+        case 'reset':
+          return setTopOffset(0);
         case undefined: {
           throw new Error('Not implemented yet: undefined case');
         }
