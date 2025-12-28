@@ -24,8 +24,17 @@ type SetScroll = {
   type: 'setScroll';
   value: boolean;
 };
+type ChangeTopOffset = {
+  type: 'changeTopOffset';
+  value: number;
+};
 
-type ServerMessages = SetImage | ChangeOpacity | SetHidden | SetScroll;
+type ServerMessages =
+  | SetImage
+  | ChangeOpacity
+  | SetHidden
+  | SetScroll
+  | ChangeTopOffset;
 
 export const validateMessage = (data: any) => {
   try {
@@ -70,6 +79,7 @@ export const Overlay = ({ host, port }: { host?: string; port?: number }) => {
   const [opacity, setOpacity] = useState<number>(0.6);
   const [hidden, setHidden] = useState<boolean>(false);
   const [scroll, setScroll] = useState<boolean>(false);
+  const [topOffset, setTopOffset] = useState<number>(0);
   const scrollRef = useRef<ScrollView>(null);
   const onSetImage = useCallback((msg: SetImage) => {
     // Use the callback form of getSize, not the promise form: the latter only
@@ -104,14 +114,14 @@ export const Overlay = ({ host, port }: { host?: string; port?: number }) => {
           return setHidden(msg.value);
         case 'setScroll':
           return setScroll(msg.value);
+        case 'changeTopOffset':
+          return setTopOffset((value) => value + msg.value);
         case undefined: {
           throw new Error('Not implemented yet: undefined case');
         }
       }
     };
-    ws.onerror = (e) => {
-      console.error('rn-pixel-perfect', e);
-    };
+    ws.onerror = (e) => console.error('Overlay', e);
 
     ws.onclose = () => {
       setImg(null);
@@ -124,13 +134,13 @@ export const Overlay = ({ host, port }: { host?: string; port?: number }) => {
     () =>
       ({
         position: 'absolute',
-        top: 0,
+        top: topOffset,
         width: '100%',
         height: '100%',
         opacity,
         pointerEvents: scroll ? undefined : 'none',
       }) as const,
-    [opacity, scroll],
+    [opacity, scroll, topOffset],
   );
 
   if (!img || hidden) return null;
