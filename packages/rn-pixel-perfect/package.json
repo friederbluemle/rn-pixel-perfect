@@ -31,7 +31,6 @@
     "build": "tsc"
   },
   "peerDependencies": {
-    "expo-constants": ">= 15.x",
     "react": ">= 18.x",
     "react-native": ">= 0.73.x"
   },

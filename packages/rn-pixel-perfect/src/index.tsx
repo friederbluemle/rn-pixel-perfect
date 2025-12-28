@@ -1,6 +1,11 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { Image, Dimensions, ScrollView } from 'react-native';
-import Constants from 'expo-constants';
+import {
+  Image,
+  Dimensions,
+  ScrollView,
+  NativeModules,
+  Platform,
+} from 'react-native';
 
 type SetImage = {
   type: 'setImage';
@@ -33,11 +38,27 @@ export const validateMessage = (data: any) => {
   }
 };
 
+// In a dev build, Metro serves the JS bundle from the dev machine, so the
+// bundle URL carries its LAN IP (e.g. http://192.168.1.42:8081/index.bundle).
+// This lets a physical device reach the CLI without configuring `host` by hand.
+// Production bundles load from a file:// path, so we fall back to localhost.
 const getHost = (userHost?: string) => {
   if (userHost) return userHost;
-  if (!Constants.expoConfig?.hostUri) return 'localhost';
-  const [host] = Constants.expoConfig.hostUri.split(':');
-  return host;
+  // eslint-disable-next-line dot-notation -- bracket access required by TS index-signature rule
+  const SourceCode = NativeModules['SourceCode'];
+  const scriptURL: string | undefined =
+    SourceCode?.getConstants?.().scriptURL ?? SourceCode?.scriptURL;
+  return scriptURL?.match(/^https?:\/\/([^:/]+)/)?.[1] ?? 'localhost';
+};
+
+// A label to tell connected clients apart in the CLI's device list.
+const getDeviceName = () => {
+  const c = Platform.constants;
+  if ('Manufacturer' in c) {
+    return [c.Manufacturer, c.Model].filter(Boolean).join(' ') || 'Android';
+  }
+  if ('systemName' in c) return `${c.systemName} ${Platform.Version}`;
+  return `${Platform.OS} ${Platform.Version}`;
 };
 
 const ImgStyle = {
@@ -65,7 +86,7 @@ export const Overlay = ({ host, port }: { host?: string; port?: number }) => {
       ws.send(
         JSON.stringify({
           type: 'register',
-          name: Constants.deviceName ?? 'Unknown',
+          name: getDeviceName(),
         }),
       );
     };

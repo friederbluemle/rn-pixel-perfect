@@ -79,14 +79,13 @@ rn-pixel-perfect --folder images --port 1234
 
 The `Overlay` component displays design overlays on your app's screens and connects with the CLI for live control. 
 No parameters are needed by default. 
-Uses `expo-constants`.
 
 ### Props
 
-| Name | Description                  | Default       |
-|------|------------------------------|---------------|
-| host | Host to rn-pixel-perfect-cli | Expo Host URI |
-| port | Port to rn-pixel-perfect-cli | `3210`        |
+| Name | Description                  | Default         |
+|------|------------------------------|-----------------|
+| host | Host to rn-pixel-perfect-cli | Dev server host |
+| port | Port to rn-pixel-perfect-cli | `3210`          |
 
 #### Example:
 
