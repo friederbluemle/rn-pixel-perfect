@@ -5,10 +5,7 @@
     "packages/*"
   ],
   "scripts": {
-    "prettier:fix": "npx prettier ./packages --write",
-    "prettier": "npx prettier ./packages --check",
-    "eslint": "npx eslint ./packages/**/*.ts[x] --no-ignore",
-    "check": "npm run prettier && npm run eslint",
+    "lint": "eslint ./packages/**/*.ts[x] --no-ignore",
     "build": "lerna run build",
     "publish": "npm run check && npm run build && lerna publish"
   },
